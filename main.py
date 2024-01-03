@@ -1,13 +1,17 @@
 import os
 import sys
-import random
 import time
 import pygame
+from builder import create_maze
+from rich import print, markdown, console
 
 SIDE_LENGTH = 32
 
+console = console.Console()
 
 # Class for the orange dude
+
+
 class Player(object):
     def __init__(self):
         self.rect = pygame.Rect(32, 32, SIDE_LENGTH, SIDE_LENGTH)
@@ -15,9 +19,11 @@ class Player(object):
     def move(self, dx, dy):
         # Move each axis separately. Note that this checks for collisions both times.
         if dx != 0:
-            self.move_single_axis(dx, 0)
+            if self.move_single_axis(dx, 0) == -1:
+                return -1
         if dy != 0:
-            self.move_single_axis(0, dy)
+            if self.move_single_axis(0, dy) == -1:
+                return -1
 
     def move_single_axis(self, dx, dy):
         # Move the rect
@@ -35,6 +41,7 @@ class Player(object):
                     self.rect.bottom = wall.rect.top
                 if dy < 0:  # Moving up; Hit the bottom side of the wall
                     self.rect.top = wall.rect.bottom
+                return -1
 
     def set_start_position(self, x, y):
         self.rect = pygame.Rect(x, y, SIDE_LENGTH, SIDE_LENGTH)
@@ -53,14 +60,7 @@ class Path(object):
         self.rect = pygame.Rect(pos[0], pos[1], SIDE_LENGTH, SIDE_LENGTH)
 
 
-# Holds the level layout in a list of strings.
-level = [
-    "WWWWWWWWWWWWWWWWWWWW",
-    "W  S               W",
-    "WWW   W   WWWWWWW  W",
-    "WWW   W E          W",
-    "WWWWWWWWWWWWWWWWWWWW",
-]
+level = create_maze(2)
 
 # Initialise pygame
 os.environ["SDL_VIDEO_CENTERED"] = "1"
@@ -83,26 +83,33 @@ player = Player()  # Create the player
 x = y = 0
 for row in level:
     for col in row:
-        if col == "W":
+        if col == 1:
             Wall((x, y))
-        if col == " ":
+        if col == 0:
             Path((x, y))
-        if col == "E":
-            end_rect = pygame.Rect(x, y, SIDE_LENGTH, SIDE_LENGTH)
-        if col == "S":
-            player.set_start_position(x, y)
         x += SIDE_LENGTH
     y += SIDE_LENGTH
     x = 0
 
 
 # Draw the scene
+
+
+end_rect = pygame.Rect(SIDE_LENGTH*(len(level)-1),
+                       (len(level[0])-2)*SIDE_LENGTH, SIDE_LENGTH, SIDE_LENGTH)
+
+player.set_start_position(0, SIDE_LENGTH)
+
+
 def draw_game():
     screen.fill((0, 0, 0))
     for p in path:
         pygame.draw.rect(screen, (205, 133, 63), p.rect, 1)
     for wall in walls:
         pygame.draw.rect(screen, (255, 255, 255), wall.rect, 5)
+        if player.rect.colliderect(wall):
+            return -1
+
     pygame.draw.rect(screen, (255, 0, 0), end_rect)
     pygame.draw.rect(screen, (255, 200, 0), player.rect)
     # gfxdraw.filled_circle(screen, 255, 200, 5, (0,128,0))
@@ -142,22 +149,34 @@ while running:
                 print(command_sequence)
                 # player.move(SIDE_LENGTH, 0)
             if event.key == pygame.K_RETURN:
-                print("Starting command sequence.")
+                print("Starting direction sequence.")
                 print(
-                    "If you do not reach the end goal you can start a new command sequence."
+                    "If you do not reach the end goal you can start a new direction sequence."
                 )
-                for command in command_sequence:
-                    pygame.time.delay(500)
-                    player.move(*command_dict[command])
+                for idx, command in enumerate(command_sequence):
+                    pygame.time.delay(200)
+                    prev_rect = player.rect
                     draw_game()
-                    pygame.time.delay(500)
+                    if player.move(*command_dict[command]) == -1:
+                        md = markdown.Markdown("# You have collided.")
+                        console.print(md, style="black on yellow")
+                        md = markdown.Markdown(
+                            "## Your last correct sequence was:")
+                        console.print(md, style="green underline")
+                        md = markdown.Markdown(f"### {command_sequence[:idx]}")
+                        console.print(md)
+
+                        break
+                    curr_rect = player.rect
+                    pygame.time.delay(600)
                 command_sequence = []
             if event.key == pygame.K_ESCAPE:
                 running = False
 
     # Just added this to make it slightly fun ;)
     if player.rect.colliderect(end_rect):
-        print("Well done!")
+        md = markdown.Markdown("# You've completed the maze. Well done!")
+        console.print(md, style="yellow on black")
         time.sleep(1)
         pygame.quit()
         sys.exit()
