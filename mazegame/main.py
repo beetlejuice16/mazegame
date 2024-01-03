@@ -4,11 +4,17 @@ import time
 import pygame
 from builder import create_maze
 from rich import print, markdown, console
+import argparse
 
 SIDE_LENGTH = 32
 
+parser = argparse.ArgumentParser(description="Set dimensions of the maze")
+parser.add_argument("Dimension", type=int, choices=range(
+    1, 10), default=4, help="An integer to determine the dimensions of the maze")
+args = parser.parse_args()
 console = console.Console()
 
+print(args.Dimension)
 # Class for the orange dude
 
 
@@ -60,7 +66,7 @@ class Path(object):
         self.rect = pygame.Rect(pos[0], pos[1], SIDE_LENGTH, SIDE_LENGTH)
 
 
-level = create_maze(2)
+level = create_maze(args.Dimension)
 
 # Initialise pygame
 os.environ["SDL_VIDEO_CENTERED"] = "1"
