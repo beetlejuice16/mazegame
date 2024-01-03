@@ -14,7 +14,6 @@ parser.add_argument("Dimension", type=int, choices=range(
 args = parser.parse_args()
 console = console.Console()
 
-print(args.Dimension)
 # Class for the orange dude
 
 
@@ -181,7 +180,10 @@ while running:
 
     # Just added this to make it slightly fun ;)
     if player.rect.colliderect(end_rect):
-        md = markdown.Markdown("# You've completed the maze. Well done!")
+        md = markdown.Markdown(
+            "# You've completed the maze. Well done! BRAVO LOZO!")
+        console.print(md, style="yellow on black")
+        md = markdown.Markdown("BRAVO LOZO!")
         console.print(md, style="yellow on black")
         time.sleep(1)
         pygame.quit()
