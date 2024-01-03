@@ -5,6 +5,7 @@ description = "Game for my little brother"
 authors = ["beetlejuice16 <fayez.bajjali@proton.me>"]
 license = "MIT"
 readme = "README.md"
+packages = [{include = "mazegame"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
