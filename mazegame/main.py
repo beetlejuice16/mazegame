@@ -181,9 +181,9 @@ while running:
     # Just added this to make it slightly fun ;)
     if player.rect.colliderect(end_rect):
         md = markdown.Markdown(
-            "# You've completed the maze. Well done! BRAVO LOZO!")
+            "# You've completed the maze. Well done!")
         console.print(md, style="yellow on black")
-        md = markdown.Markdown("BRAVO LOZO!")
+        md = markdown.Markdown("# BRAVO LOZO!")
         console.print(md, style="yellow on black")
         time.sleep(1)
         pygame.quit()
