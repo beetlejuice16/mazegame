@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "mazegame"
+version = "0.1.0"
+description = "Game for my little brother"
+authors = ["beetlejuice16 <fayez.bajjali@proton.me>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pygame = "^2.5.2"
+numpy = "^1.26.3"
+rich = "^13.7.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
