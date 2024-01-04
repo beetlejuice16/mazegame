@@ -160,7 +160,6 @@ while running:
                 )
                 for idx, command in enumerate(command_sequence):
                     pygame.time.delay(200)
-                    prev_rect = player.rect
                     draw_game()
                     if player.move(*command_dict[command]) == -1:
                         md = markdown.Markdown("# You have collided.")
@@ -172,13 +171,13 @@ while running:
                         console.print(md)
 
                         break
-                    curr_rect = player.rect
                     pygame.time.delay(600)
                 command_sequence = []
             if event.key == pygame.K_ESCAPE:
                 running = False
 
     # Just added this to make it slightly fun ;)
+    draw_game()
     if player.rect.colliderect(end_rect):
         md = markdown.Markdown(
             "# You've completed the maze. Well done!")
@@ -188,8 +187,6 @@ while running:
         time.sleep(1)
         pygame.quit()
         sys.exit()
-
-    draw_game()
 
     clock.tick(360)
 
