@@ -13,6 +13,9 @@ pygame = "^2.5.2"
 numpy = "^1.26.3"
 rich = "^13.7.0"
 
+[tool.poetry.scripts]
+game = "mazegame.main:main"
+
 
 [build-system]
 requires = ["poetry-core"]
